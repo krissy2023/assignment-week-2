@@ -1,0 +1,24 @@
+USE [IndustryConnectWeek2]
+GO
+
+/****** Object:  View [dbo].[CustomerSales]    Script Date: 25/08/2024 10:41:29 pm ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER view [dbo].[CustomerSales]
+as
+select c.Id as 'Customer Id', c.FirstName, c.LastName, s.DateSold, p.[Name], p.Price
+, [dbo].[GetCustomerAmount](c.Id) as [Total Purchases] , CONCAT_WS(' ', c.FirstName, c.LastName) as [Full Name]
+	from [dbo].[Customer] c 
+		left join 
+			Sale s on 
+				c.Id = s.CustomerId
+					left join 
+						Product p on
+							s.ProductId = p.Id 
+GO
+
+
