@@ -5,15 +5,23 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE function [dbo].[GetCustomerAmount] (@CustomerId int)
+ALTER function [dbo].[GetCustomerAmount] (@CustomerId int)
 returns money
 as
 begin
---declare @amount money;
+declare @amount money;
 
-return (select sum(price) from CustomerSales where [Customer Id] = @CustomerId);
+return (select sum(p.price) 
+	from Customer c
+		left join 
+			Sale s on 
+				c.Id = s.CustomerId
+					left join 
+						Product p on
+							s.ProductId = p.Id 
+							where c.Id = @CustomerId);
+	
 
---return @amount
 end
 GO
 /****** Object:  Table [dbo].[Customer]    Script Date: 03/06/2024 16:21:03 ******/
@@ -124,6 +132,14 @@ REFERENCES [dbo].[Product] ([Id])
 GO
 ALTER TABLE [dbo].[Sale] CHECK CONSTRAINT [FK_Sale_Product]
 GO
+
+ALTER TABLE [dbo].[Sale] ADD StoreId INT
+GO
+
+ALTER TABLE [dbo].[Sale]  WITH CHECK ADD  CONSTRAINT [FK_Sale_Store] FOREIGN KEY([StoreId])
+REFERENCES [dbo].[Store] ([Id])
+GO
+
 /****** Object:  StoredProcedure [dbo].[InsertProduct]    Script Date: 03/06/2024 16:21:03 ******/
 SET ANSI_NULLS ON
 GO
@@ -138,3 +154,4 @@ values
 
 end
 GO
+
