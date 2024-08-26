@@ -1,0 +1,22 @@
+
+
+CREATE FUNCTION [dbo].[GetCustomerAge] (@dob DATETIME) 
+RETURNS INT
+AS 
+
+BEGIN
+
+DECLARE @Age INT
+SELECT @Age = DATEDIFF(YEAR, @dob, GETDATE()) -
+			CASE 
+				WHEN DATEFROMPARTS(YEAR(GETDATE()), MONTH(@dob), DAY(@dob)) > GETDATE()
+				THEN 1
+				ELSE 0
+				END
+ RETURN @Age 
+
+END
+
+GO
+
+
